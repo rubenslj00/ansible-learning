@@ -1,0 +1,14 @@
+---
+- hosts: devops  
+  remote_user: edureka
+  tasks:
+    - name: test connection(s)
+      ping:   
+    - name: copy file(s)
+      copy: 
+        src: "/home/edureka/devops/copy1" 
+        dest: "/home/edureka/devops/"
+        owner: edureka
+        group: edureka
+        mode: 0644
+    

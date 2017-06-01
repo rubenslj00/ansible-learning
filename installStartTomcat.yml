@@ -1,0 +1,30 @@
+---
+- hosts: devops  
+  remote_user: edureka
+  tasks:
+    - name: test connection(s)
+      ping:   
+    - name: Check if tomcat exists on destination
+      shell: "test -f /home/edureka/devops/apache-tomcat-8.0.44.tar.gz || true"      
+      register: tommee_exists
+    - name: debug info is printed
+      debug: 
+        var: tommee_exists
+        verbosity: 2
+    - name: Clean up Destination tomcat
+      shell: "rm -rf apache-tomcat-8.0.44.tar.gz apache-tomcat-8.0.44/"
+      args:
+        chdir: /home/edureka/devops/ 
+      when: tommee_exists.rc == 0
+    - name: copy tomcat tar file
+      copy: 
+        src: "/home/edureka/Downloads/apache-tomcat-8.0.44.tar.gz" 
+        dest: "/home/edureka/devops/"
+        owner: edureka
+        group: edureka
+        mode: 0644
+    - name: change to tomcat tar location and unzip
+      shell: "tar -xzvf apache-tomcat-8.0.44.tar.gz"
+      args:
+        chdir: /home/edureka/devops/
+

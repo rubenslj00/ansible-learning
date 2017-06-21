@@ -4,6 +4,7 @@
   vars:
     TOMMEE_HOME: "/home/edureka/devops/apache-tomcat-8.0.44"
     TOMMEE_PROCESS_NAME: "apache-tomcat-8.0.44"
+    APPLICATION_NAME: "devops-web"
   tasks:
     - name: Fetch Tomcat Process Id
       shell: "ps -ef | grep {{ TOMMEE_PROCESS_NAME }} | grep -v grep | awk '{print $2}'"
@@ -22,3 +23,13 @@
     - name: Start Tomcat using nohup
       command: "nohup {{ TOMMEE_HOME }}/bin/startup.sh"
       tags: startTomcat
+
+    - name: Pause for 10 seconds to build app cache.
+      pause:
+        seconds: 10
+
+    - name: Update Last Deployed Timestamp
+      shell: 'sed -i "8s/.*/Last Deployed at $(date)/" LastDeployed.html'
+      args:
+        chdir: "{{ TOMMEE_HOME }}/webapps/{{ APPLICATION_NAME }}/"
+      tags: updateLastDeployed

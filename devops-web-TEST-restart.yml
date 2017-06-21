@@ -1,0 +1,24 @@
+---
+- hosts: infra
+  remote_user: edureka
+  vars:
+    TOMMEE_HOME: "/home/edureka/devops/apache-tomcat-8.0.44"
+    TOMMEE_PROCESS_NAME: "apache-tomcat-8.0.44"
+  tasks:
+    - name: Fetch Tomcat Process Id
+      shell: "ps -ef | grep {{ TOMMEE_PROCESS_NAME }} | grep -v grep | awk '{print $2}'"
+      register: tommee_pid
+
+    - name: debug info is printed
+      debug:
+        var: tommee_pid
+        verbosity: 2
+
+    - name: Stop Tomcat using nohup
+      command: "nohup {{ TOMMEE_HOME }}/bin/shutdown.sh"
+      when: tommee_pid.stdout != ""
+      tags: stopTomcat
+
+    - name: Start Tomcat using nohup
+      command: "nohup {{ TOMMEE_HOME }}/bin/startup.sh"
+      tags: startTomcat

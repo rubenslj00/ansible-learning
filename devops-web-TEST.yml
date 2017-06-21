@@ -9,6 +9,7 @@
     WAR_NAME: "{{ lookup('env','WAR_NAME') }}"
     TOMMEE_HOME: "/home/edureka/devops/apache-tomcat-8.0.44"
     TOMMEE_PROCESS_NAME: "apache-tomcat-8.0.44"
+    APPLICATION_NAME: "devops-web"
 
   tasks:
     - name: Fetch Tomcat Process Id
@@ -17,7 +18,7 @@
 
     - name: debug info is printed
       debug:
-        var: tommee_pid
+        var: tommee_pid.stdout
         verbosity: 2
 
     - name: Stop Tomcat using nohup
@@ -37,3 +38,13 @@
     - name: Start Tomcat using nohup
       command: "nohup {{ TOMMEE_HOME }}/bin/startup.sh"
       tags: startTomcat
+
+    - name: Pause for 10 seconds to build app cache.
+      pause:
+        seconds: 10
+
+    - name: Update Last Deployed Timestamp
+      shell: 'sed -i "8s/.*/Last Deployed at $(date)/" LastDeployed.html'
+      args:
+        chdir: "{{ TOMMEE_HOME }}/webapps/{{ APPLICATION_NAME }}/"
+      tags: updateLastDeployed

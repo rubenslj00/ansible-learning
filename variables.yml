@@ -1,0 +1,30 @@
+---
+- hosts: infra
+  remote_user: edureka
+
+  tasks:
+    - name: declare-variable-value
+      shell: echo "$(date +%s)"
+      register: starttime
+
+    - name: sleep 2 seconds
+      shell: |
+        sleep 2
+        echo "$(date +%s)"
+      register: endtime
+
+    - name: print-variable-value
+      shell: |
+        echo 'Start={{ starttime.start }}; End={{ endtime.start }}' > ~/devops/variable.output
+    #   echo 'Duration=$(( {{ endtime.end }} - {{ starttime.start }} ))' >> ~/devops/variable.output
+    #   shell: |
+    #     start='{{ starttime.start }}'
+    #     echo "START="$(start) > variable.output
+    #     end='{{ endtime.end }}'
+    #     echo "END="$(end) >> variable.output
+    #     DIFF=$(( $end - $start ))
+    #     echo "DIFF="$DIFF >> variable.output
+    #     echo "It took $((DIFF/60)) mins and $((DIFF%60)) seconds" >> variable.output
+    #   args:
+    #     executable: /bin/bash
+    #     chdir: /home/edureka/devops/

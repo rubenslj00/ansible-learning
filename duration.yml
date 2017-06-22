@@ -1,0 +1,26 @@
+---
+- hosts: infra
+  remote_user: edureka
+
+  tasks:
+    - name: start-date-time
+      shell: |
+        rm durationfile
+        echo "$(date +%s)" > starttimefile
+      args:
+        chdir: /home/edureka/devops/
+
+    # - set_fact: one_fact="something"
+        # echo {{ one_fact }} > onefact
+
+    - name: sleep for random time (less than 10 seconds)
+      shell: sleep $(shuf -i 1-9 -n 1)
+
+    - name: finish-date-time
+      shell: |
+        cd /home/edureka/devops/
+        finishtime=$(date +%s)
+        starttime=`cat starttimefile`
+        DIFF=$(( $finishtime - $starttime ))
+        echo "It took $((DIFF/60)) mins and $((DIFF%60)) seconds" > durationfile
+        rm starttimefile

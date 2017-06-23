@@ -15,8 +15,11 @@
 
     - name: print-variable-value
       shell: |
-        echo 'Start={{ starttime.start }}; End={{ endtime.start }}' > ~/devops/variable.output
-    #   echo 'Duration=$(( {{ endtime.end }} - {{ starttime.start }} ))' >> ~/devops/variable.output
+        rm variables.out
+        echo 'Start={{ starttime.start }}; End={{ endtime.end }}' > variables.out
+      args:
+        chdir: /home/edureka/devops
+    #   echo 'Duration=$(( {{ endtime.end }} - {{ starttime.start }} ))' >> variable.output
     #   shell: |
     #     start='{{ starttime.start }}'
     #     echo "START="$(start) > variable.output

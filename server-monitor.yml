@@ -1,0 +1,12 @@
+---
+- hosts: infra
+  remote_user: edureka
+
+  tasks:
+    - name: Host Uptime
+      shell: /usr/bin/uptime
+      register: result
+
+    - name: Host Uptime Display
+      debug:
+        msg: "{{ result.stdout }}"

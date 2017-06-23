@@ -10,8 +10,15 @@
     TOMMEE_HOME: "/home/edureka/devops/apache-tomcat-8.0.44"
     TOMMEE_PROCESS_NAME: "apache-tomcat-8.0.44"
     APPLICATION_NAME: "devops-web"
+    SHELL_RUN_PATH: "/home/edureka/devops/"
 
   tasks:
+    - name: start-date-time
+      shell: |
+        echo "$(date +%s)" > starttimefile
+      args:
+        chdir: "{{ SHELL_RUN_PATH }}"      
+
     - name: Fetch Tomcat Process Id
       shell: "ps -ef | grep {{ TOMMEE_PROCESS_NAME }} | grep -v grep | awk '{print $2}'"
       register: tommee_pid
@@ -48,3 +55,18 @@
       args:
         chdir: "{{ TOMMEE_HOME }}/webapps/{{ APPLICATION_NAME }}/"
       tags: updateLastDeployed
+
+    - name: finish-date-time
+      shell: |
+        finishtime=$(date +%s)
+        starttime=`cat starttimefile`
+        DIFF=$(( $finishtime - $starttime ))
+        echo "Playbook ran for $((DIFF/60)) mins and $((DIFF%60)) seconds"
+        rm starttimefile
+      args:
+        chdir: "{{ SHELL_RUN_PATH }}"
+      register: DURATION
+
+    - name: Print Duration Information
+      debug:
+        msg: "{{ DURATION.stdout }}"

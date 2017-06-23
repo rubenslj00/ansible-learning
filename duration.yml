@@ -1,26 +1,30 @@
 ---
 - hosts: infra
   remote_user: edureka
+  vars:
+    SHELL_RUN_PATH: "/home/edureka/devops/"
 
   tasks:
     - name: start-date-time
       shell: |
-        rm durationfile
         echo "$(date +%s)" > starttimefile
       args:
-        chdir: /home/edureka/devops/
+        chdir: "{{ SHELL_RUN_PATH }}"
 
-    # - set_fact: one_fact="something"
-        # echo {{ one_fact }} > onefact
-
-    - name: sleep for random time (less than 10 seconds)
-      shell: sleep $(shuf -i 1-9 -n 1)
+    - name: sleep for random time (less than 5 seconds)
+      shell: sleep $(shuf -i 1-4 -n 1)
 
     - name: finish-date-time
       shell: |
-        cd /home/edureka/devops/
         finishtime=$(date +%s)
         starttime=`cat starttimefile`
         DIFF=$(( $finishtime - $starttime ))
-        echo "It took $((DIFF/60)) mins and $((DIFF%60)) seconds" > durationfile
+        echo "Playbook ran for $((DIFF/60)) mins and $((DIFF%60)) seconds"
         rm starttimefile
+      args:
+        chdir: "{{ SHELL_RUN_PATH }}"
+      register: DURATION
+
+    - name: Print Duration Information
+      debug:
+        msg: "{{ DURATION.stdout }}"

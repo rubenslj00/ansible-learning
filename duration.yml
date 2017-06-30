@@ -11,8 +11,8 @@
       args:
         chdir: "{{ SHELL_RUN_PATH }}"
 
-    - name: sleep for random time (less than 5 seconds)
-      shell: sleep $(shuf -i 1-4 -n 1)
+    - name: sleep for random time (less than 10 seconds)
+      shell: sleep $(shuf -i 3-6 -n 1)
 
     - name: finish-date-time
       shell: |

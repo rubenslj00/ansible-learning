@@ -1,6 +1,9 @@
 ---
 - hosts: infra
   remote_user: edureka
+  vars:
+    TOMMEE_HOME: "/home/edureka/devops/apache-tomcat-8.0.44"
+    TOMMEE_PROCESS_NAME: "apache-tomcat-8.0.44"
   tasks:
     - name: Verify Tomcat Installations
       shell: "test -f /home/edureka/devops/apache-tomcat-8.0.44.tar.gz || true"

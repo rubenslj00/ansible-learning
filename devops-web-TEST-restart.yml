@@ -9,11 +9,13 @@
     - name: Fetch Tomcat Process Id
       shell: "ps -ef | grep {{ TOMMEE_PROCESS_NAME }} | grep -v grep | awk '{print $2}'"
       register: tommee_pid
+      tags: fetchPID
 
     - name: debug info is printed
       debug:
         var: tommee_pid
         verbosity: 2
+      tags: printDebugInfo
 
     - name: Stop Tomcat using nohup
       command: "nohup {{ TOMMEE_HOME }}/bin/shutdown.sh"
@@ -27,6 +29,7 @@
     - name: Pause for 10 seconds to build app cache.
       pause:
         seconds: 10
+      tags: pause10
 
     - name: Update Last Deployed Timestamp
       shell: 'sed -i "8s/.*/Last Deployed at $(date)/" LastDeployed.html'

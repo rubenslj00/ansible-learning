@@ -1,0 +1,9 @@
+---
+- hosts: infra  
+  remote_user: edureka
+  tasks:
+    - name: Fetch from remotes
+      fetch:
+        src: /home/edureka/devops/apache-tomcat-8.0.44/bin/tomcat-initscript.sh
+        dest: /home/edureka/devops/devops-{{ inventory_hostname }}/
+        flat: yes

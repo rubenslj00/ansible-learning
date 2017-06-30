@@ -1,5 +1,5 @@
 ---
-- hosts: devops  
+- hosts: infra  
   remote_user: edureka
   tasks:
     - name: test connection(s)

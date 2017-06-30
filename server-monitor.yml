@@ -9,4 +9,6 @@
 
     - name: Host Uptime Display
       debug:
-        msg: "{{ result.stdout }}"
+        msg:
+          - "msg1 = {{ result.stdout_lines[0] }}"
+          - "msg2 = {{ result.stdout }}"    

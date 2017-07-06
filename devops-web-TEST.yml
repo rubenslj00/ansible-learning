@@ -17,7 +17,7 @@
       shell: |
         echo "$(date +%s)" > starttimefile
       args:
-        chdir: "{{ SHELL_RUN_PATH }}"      
+        chdir: "{{ SHELL_RUN_PATH }}"
 
     - name: Fetch Tomcat Process Id
       shell: "ps -ef | grep {{ TOMMEE_PROCESS_NAME }} | grep -v grep | awk '{print $2}'"
@@ -28,6 +28,13 @@
         var: tommee_pid.stdout
         verbosity: 2
 
+    - name: Delete Old Files      
+      shell: |
+        rm {{ WAR_NAME }} || true
+        rm -rf {{ Application }}/ || true
+      args:
+        chdir: "{{ TOMMEE_HOME }}/webapps/"
+
     - name: Stop Tomcat using nohup
       command: "nohup {{ TOMMEE_HOME }}/bin/shutdown.sh"
       when: tommee_pid.stdout != ""
@@ -36,7 +43,7 @@
     - name: Copy/Overwrite application war file
       tags: deployWar
       copy:
-        src: "{{ WORKSPACE }}/Applications/{{ Application }}/app/{{ NewBuildNumber }}/{{ WAR_NAME }}"
+        src: "{{ WORKSPACE }}/{{ WAR_NAME }}"
         dest: "{{ TOMMEE_HOME }}/webapps/"
         owner: edureka
         group: edureka
@@ -50,11 +57,11 @@
       pause:
         seconds: 10
 
-    - name: Update Last Deployed Timestamp
-      shell: 'sed -i "8s/.*/Last Deployed at $(date)/" LastDeployed.html'
-      args:
-        chdir: "{{ TOMMEE_HOME }}/webapps/{{ APPLICATION_NAME }}/"
-      tags: updateLastDeployed
+#    - name: Update Last Deployed Timestamp
+#      shell: 'sed -i "8s/.*/Last Deployed at $(date)/" LastDeployed.html'
+#      args:
+#        chdir: "{{ TOMMEE_HOME }}/webapps/{{ APPLICATION_NAME }}/"
+#      tags: updateLastDeployed
 
     - name: finish-date-time
       shell: |

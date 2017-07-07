@@ -1,0 +1,10 @@
+---
+# Ensure that exactly five containers of another server are running with this
+# exact image and command. If fewer than five are running, more will be launched;
+# if more are running, the excess will be stopped.
+
+- name: Create tommy containers
+  docker:
+    name: load-balanced-tommys
+    image: tommy8.5:latest
+    state: present

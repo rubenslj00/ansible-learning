@@ -1,0 +1,15 @@
+---
+- hosts: all  
+  remote_user: edureka
+  vars: 
+    APP_HOME_DIR: "/home/edureka/devops"
+    
+  vars_prompt:
+    - name: username
+      prompt: What is your name?
+
+  tasks:
+    - name: Copy Template as HTML File
+      template:
+        src: "/home/edureka/REPOS/ansible-learning/from_plural_sight/templates/index.j2"
+        dest: "{{ APP_HOME_DIR }}/index.html"

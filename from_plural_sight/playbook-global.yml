@@ -17,12 +17,14 @@
       debug:
         msg:
           - "msg1 = {{ result.stdout_lines[0] }}"
-          - "msg2 = {{ result.stdout }}"      
       when: ansible_os_family == "Debian"
 
     - name: Stop {{ service_name }} Service
       service: name={{ service_name }} state=stopped
       when: ansible_os_family == "Debian"
+
+    - name: sleep for random time (less than 10 seconds)
+      shell: sleep $(shuf -i 2-10 -n 1)
   
     - name: Start {{ service_name }} Service
       service: name={{ service_name }} state=started
@@ -34,6 +36,8 @@
       when: ansible_os_family == "Debian"
 
     - name: access control info is printed
-      debug: var=acl_info.acl.user  verbosity=2    
+      debug: 
+        var: acl_info.acl
+        verbosity: 2    
       when: ansible_os_family == "Debian"
 

@@ -3,7 +3,9 @@
 - hosts: all  
   remote_user: edureka
   vars: 
-    service_name: "devops-web-maven-init-script"
+    APP_HOME_DIR: "/home/edureka/devops"
+    APP_NAME: "devops-web-maven"
+  #  service_name: "devops-web-maven-init-script"
 
   tasks:
     - name: test connection(s)
@@ -20,17 +22,28 @@
           - "msg1 = {{ result.stdout_lines[0] }}"
       when: ansible_os_family == "Debian"
 
-    - name: Stop {{ service_name }} Service
-      service: name={{ service_name }} state=stopped
-      when: ansible_os_family == "Debian"
+    - name: Get springboot app PID
+      shell: ps fax | grep java | grep -v grep | grep {{ APP_NAME }}.jar |awk '{print $1}'
+      register: running_pid
+
+    - name: Print Application PID
+      debug:
+        var: running_pid.stdout
+        verbosity: 2
+      
+    - name: Stop springboot app (using PID)
+      shell: kill -9 {{ running_pid.stdout }}
+      notify: Start springboot app
+
+
+    #- name: Stop {{ service_name }} Service
+    #  service: name={{ service_name }} state=stopped
+    #  when: ansible_os_family == "Debian"
+    #  notify: Start {{ service_name }} Service
 
     - name: sleep for random time (less than 10 seconds)
       shell: sleep $(shuf -i 2-10 -n 1)
-  
-    - name: Start {{ service_name }} Service
-      service: name={{ service_name }} state=started
-      when: ansible_os_family == "Debian"
-    
+      
     - name: get access control list
       acl: path="/home/edureka/devops"
       register: acl_info
@@ -42,3 +55,12 @@
         verbosity: 2    
       when: ansible_os_family == "Debian"
 
+  handlers:
+    - name: Start springboot app
+      shell: nohup java -jar {{APP_NAME}}.jar > {{ APP_HOME_DIR }}/log-{{ APP_NAME }}.out 2>&1 &
+      args:
+        chdir: "{{ APP_HOME_DIR }}"  
+
+    #- name: Start {{ service_name }} Service
+    #  service: name={{ service_name }} state=started
+    #  when: ansible_os_family == "Debian"

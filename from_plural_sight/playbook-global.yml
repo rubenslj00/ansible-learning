@@ -1,17 +1,39 @@
 ---
 - hosts: all  
   remote_user: edureka
+  vars: 
+    service_name: "devops-web-maven-init-script"
 
   tasks:
     - name: test connection(s)
-      ping:   
+      ping: 
+
+    - name: Host Uptime
+      shell: /usr/bin/uptime
+      register: result
+      when: ansible_os_family == "Debian"
+
+    - name: Host Uptime Display
+      debug:
+        msg:
+          - "msg1 = {{ result.stdout_lines[0] }}"
+          - "msg2 = {{ result.stdout }}"      
+      when: ansible_os_family == "Debian"
+
+    - name: Stop {{ service_name }} Service
+      service: name={{ service_name }} state=stopped
+      when: ansible_os_family == "Debian"
+  
+    - name: Start {{ service_name }} Service
+      service: name={{ service_name }} state=started
+      when: ansible_os_family == "Debian"
     
     - name: get access control list
-      acl:
-        path: "/home/edureka/devops"
+      acl: path="/home/edureka/devops"
       register: acl_info
-    - name: debug info is printed
-      debug: 
-        var: acl_info
-        verbosity: 2    
+      when: ansible_os_family == "Debian"
+
+    - name: access control info is printed
+      debug: var=acl_info.acl.user  verbosity=2    
+      when: ansible_os_family == "Debian"
 

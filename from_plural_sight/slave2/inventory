@@ -1,0 +1,10 @@
+slave2 ansible_ssh_host=10.1.151.116
+
+[slaves]
+slave2
+
+[all:children]
+slaves
+
+[all:vars]
+ansible_ssh_user=edureka

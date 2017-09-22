@@ -1,0 +1,14 @@
+---
+
+- hosts: all  
+  remote_user: edureka
+
+  tasks:
+    - name: test connection(s)
+      ping:   
+    
+    - name: create template
+      template: 
+        src: "/home/edureka/REPOS/ansible-learning/from_plural_sight/templates/test.j2"
+        dest: "/home/edureka/test.conf"
+

@@ -1,0 +1,17 @@
+---
+- hosts: slaves 
+  remote_user: edureka
+
+  tasks:
+    - name: test connection(s)
+      ping:   
+    
+    - name: get access control list
+      acl:
+        path: "/home/edureka/devops"
+      register: acl_info
+    - name: debug info is printed
+      debug: 
+        var: acl_info
+        verbosity: 2    
+

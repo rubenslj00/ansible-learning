@@ -1,0 +1,104 @@
+---
+- hosts: nodes
+
+  vars:
+    # WORKSPACE: "{{ lookup('env','WORKSPACE') }}"
+    BUILD_NUMBER: "1" #"{{ lookup('env','BUILD_NUMBER') }}"
+    APPLICATION_NAME: "devops-web-hackathon"
+    TOMCAT_HOME: "/home/osboxes/{{ APPLICATION_NAME }}/apache-tomcat-8.5.29"
+    TOMCAT_PROCESS_NAME: "apache-tomcat-8.5.29"
+    TEMP_PATH: "~/tmp"
+
+  tasks:
+    - name: Create Temp Folder
+      file:
+        path: "{{ TEMP_PATH }}"
+        mode: 0755
+        state: directory
+      tags: createTempFolder
+
+    - name: Capture Start DTTM
+      shell: |
+        echo "$(date +%s)" > starttimefile
+      args:
+        chdir: "{{ TEMP_PATH }}"
+      tags: captureStartDttm
+
+    - name: Fetch Tomcat Process Id
+      shell: "ps -ef | grep {{ TOMCAT_PROCESS_NAME }} | grep -v grep | awk '{print $2}'"
+      register: tommee_pid
+      tags: fetchTomcatPID
+
+    - name: Print Tomcat PID
+      debug:
+        msg: "Current Tomcat PID = {{ tommee_pid.stdout }}"
+      tags: printTomcatPID
+
+    - name: Undeploy Existing Application
+      file:
+        path: "{{ TOMCAT_HOME }}/webapps/{{ APPLICATION_NAME }}/"
+        state: absent
+      tags: undeployExistingApp
+
+    - name: Stop Tomcat Instance
+      command: "nohup {{ TOMCAT_HOME }}/bin/shutdown.sh"
+      when: tommee_pid.stdout != ""
+      tags: stopTomcat
+
+    - name: Copy Tar Ball
+      copy:
+        src: "{{ APPLICATION_NAME }}.tar"
+        dest: "{{ TOMCAT_HOME }}/webapps/"
+        mode: 0755
+      tags: copyTarBall
+
+    - name: Explode Tar Ball
+      shell: "tar xf {{ APPLICATION_NAME }}.tar"
+      args:
+        chdir: "{{ TOMCAT_HOME }}/webapps/"
+      tags: explodeTarBall
+
+    - name: Add LastDeployed File
+      shell: |
+        echo '<h2> Last Deployed by Build Number = {{ BUILD_NUMBER }} </h2>' > LastDeployed.html
+      args:
+        chdir: "{{ TOMCAT_HOME }}/webapps/{{ APPLICATION_NAME }}/"
+      tags: addLastDeployedFile
+
+    - name: Start Tomcat Instance
+      command: "nohup {{ TOMCAT_HOME }}/bin/startup.sh"
+      tags: startTomcat
+
+    - name: Pause for 10 seconds.
+      pause:
+        seconds: 10
+      tags: pauseFor10s
+
+    - name: Delete Tar Ball
+      file:
+        path: "{{ TOMCAT_HOME }}/webapps/{{ APPLICATION_NAME }}.tar"
+        state: absent
+      tags: delTarBall
+
+    - name: Calculate Duration
+      shell: |
+        finishtime=$(date +%s)
+        starttime=`cat starttimefile`
+        DIFF=$(( $finishtime - $starttime ))
+        echo "Playbook ran for $((DIFF/60)) mins and $((DIFF%60)) seconds"
+        rm starttimefile
+      args:
+        chdir: "{{ TEMP_PATH }}"
+      register: DURATION
+      tags: calculateDuration
+
+    - name: Delete Temp Folder
+      file:
+        path: "{{ TEMP_PATH }}"
+        state: absent
+      tags: delTempFolder
+
+    - name: Print Overall Duration Information
+      debug:
+        msg: "{{ DURATION.stdout }}"
+      tags: printDuration

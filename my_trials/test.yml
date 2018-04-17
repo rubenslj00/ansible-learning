@@ -1,0 +1,26 @@
+---
+- hosts: all
+  gather_facts: yes
+
+  tasks:
+    - name: Check Files Existence
+      shell: "ls -al /home/osboxes/folder/*.txt"
+      register: output
+
+    - name: Print Output
+      debug:
+        msg: "{{ output.stdout }}"
+
+    - name: Get hostname
+      command: /bin/hostname
+      register: my_hostname
+
+    - debug: var=my_hostname
+
+    - name: Host Uptime
+      shell: /usr/bin/uptime
+      register: result
+      when: ansible_os_family == "Debian"
+
+    - debug:
+        msg: "{{ result.stdout_lines }}"

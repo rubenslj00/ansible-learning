@@ -8,3 +8,5 @@
     name: load-balanced-tommys
     image: tommy8.5:latest
     state: present
+    count: 5
+    command: sleep 1d

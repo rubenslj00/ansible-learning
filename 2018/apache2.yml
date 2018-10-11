@@ -47,5 +47,5 @@
 
     handlers:
       - name: restart apache2
-        action:  service name={{ SERVICE_NAME }} state=restarted  
+        action: service name={{ SERVICE_NAME }} state=restarted  
         when: service_status.stat.exists

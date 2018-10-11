@@ -1,0 +1,32 @@
+---
+
+  - name: Test Ansible on Localhost
+    hosts: all
+    become: yes
+    connection: local
+
+    tasks:
+      - name: WhoAmI
+        command: whoami
+        tags: whoami
+      
+      - name: install
+        apt: 
+          name: tree 
+          state: present
+        notify: echo success message
+        tags: install
+
+      - name: remove
+        apt:
+          name: tree 
+          state: absent
+        notify: echo failure message
+        tags: remove
+
+    handlers:
+      - name: echo success message
+        command: echo "tool installed successfully"
+  
+      - name: echo failure message
+        command: echo "tool removed successfully"

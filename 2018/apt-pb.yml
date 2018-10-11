@@ -4,10 +4,16 @@
   become: yes
 
   tasks:
-    - name: install tree utility
+    - name: install tree utility on ubuntu
       apt: 
         name: tree
         state: present
-      tags: installTree
-      when: ansible_os_family == "Debian"
+      tags: installTreeOnUbuntu
+      when: ansible_distribution == "Ubuntu"
    
+    - name: install tree utility on centos
+      yum:
+        name: tree
+        state: present
+      tags: installTreeOnCentos
+      when: ansible_distribution == "CentOS"

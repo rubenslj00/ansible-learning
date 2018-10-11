@@ -1,0 +1,10 @@
+---
+- name: Install tool on local machine
+  hosts: local
+  become: yes
+
+  tasks:
+    - name: install ncompress
+      apt: 
+        name: ncompress
+        state: present

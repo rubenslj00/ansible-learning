@@ -15,7 +15,7 @@
 
     - name: Copy Template as HTML File
       copy:
-        src: "./website.html"
+        src: "/home/osboxes/Documents/ansible-learning/2018/website.html"
         dest: "{{ TARGET_DIRECTORY }}/{{ TARGET_FILE }}"
       tags: copyFile
 
@@ -30,5 +30,5 @@
     - name: Create Folder and Copy File
       shell: |
         mkdir {{ TARGET_DIRECTORY }}
-        touch {{ TARGET_DIRECTORY }}/{{ TARGET_FILE}}
+        touch {{ TARGET_DIRECTORY }}/{{ TARGET_FILE }}
       tags: inSingleTask

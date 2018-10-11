@@ -1,0 +1,51 @@
+---
+
+  - name: Install Apache2 on Localhost
+    hosts: all
+    become: yes
+
+    # use the below way or ansible_connection=local in inventory file for the host
+    # connection: local 
+
+    vars:
+      SERVICE_NAME: apache2
+      LAUNCH_PAGE_CONTENT:
+              "<html>
+                <head>
+                  <title> Launch Page Revised </title>
+                </head>
+                <body>
+                  <h1> Launch Page Revised </h1>
+                </body>
+              </html>"
+
+    tasks:
+      - name: removeApache2
+        apt: 
+          name: apache2
+          state: absent
+        tags: removeApache2
+
+      - name: installApache2
+        apt: 
+          name: apache2
+          state: present
+        tags: installApache2
+
+      - name: Check if Service Exists
+        stat: path=/etc/init.d/{{ SERVICE_NAME }}
+        register: service_status  
+
+      - name: deployFrontPage
+        copy:
+          # src: "~/Documents/ansible_playbooks/website.html"
+          content: "{{ LAUNCH_PAGE_CONTENT }}"
+          dest: "/var/www/html/index.html"
+          backup: no
+        when: service_status.stat.exists
+        notify: restart apache2
+
+    handlers:
+      - name: restart apache2
+        action:  service name={{ SERVICE_NAME }} state=restarted  
+        when: service_status.stat.exists

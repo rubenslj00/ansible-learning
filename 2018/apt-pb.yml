@@ -1,0 +1,13 @@
+---
+- name: Install tree on nodes
+  hosts: ubuntu-nodes,centos-nodes
+  become: yes
+
+  tasks:
+    - name: install tree utility
+      apt: 
+        name: tree
+        state: present
+      tags: installTree
+      when: ansible_os_family == "Debian"
+   

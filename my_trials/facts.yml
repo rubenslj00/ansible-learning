@@ -1,5 +1,5 @@
 ---
-- hosts: dev-nodes
+- hosts: all
   gather_facts: yes
 
   tasks:

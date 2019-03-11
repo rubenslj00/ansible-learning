@@ -1,0 +1,17 @@
+---
+- hosts: all
+  gather_facts: yes
+
+  vars:
+    FILE_PATH: "/home/{{ lookup('env', 'USER') }}/ansible.touch"
+
+  tasks:
+
+    - name: Print debug information
+      file: 
+        path: "{{ FILE_PATH }}"
+        state: touch
+
+    - name: Display file contents
+      shell: cat {{ FILE_PATH|quote }}
+        

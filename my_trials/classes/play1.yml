@@ -7,11 +7,22 @@
 
   tasks:
 
-    - name: Print debug information
+    - name: Delete if file exists already
+      file:
+        path: "{{ FILE_PATH }}"
+        state: absent
+
+    - name: Create Empty file
       file: 
         path: "{{ FILE_PATH }}"
         state: touch
 
+    - name: Write contents to file
+      shell: "echo 'Writing file contents' > {{ FILE_PATH }}"
+
     - name: Display file contents
       shell: cat {{ FILE_PATH|quote }}
-        
+      register: FILE_CONTENTS
+
+    - debug:
+        msg: "{{ FILE_CONTENTS.stdout }}"        

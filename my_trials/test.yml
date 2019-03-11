@@ -4,7 +4,7 @@
 
   tasks:
     - name: Check Files Existence
-      shell: "ls -al /home/osboxes/folder/*.txt"
+      shell: "ls -al /home/{{ lookup('env','USER') }}/ansible.touch"
       register: output
 
     - name: Print Output

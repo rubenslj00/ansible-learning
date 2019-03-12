@@ -30,3 +30,17 @@
         cd /home/{{ lookup('env', 'USER') }}/appCode/devops-web-maven/
         mvn clean package > build_log.log
       tags: buildCode
+
+#    - name: copy tomcat zip to nodes
+#      copy:
+#        src:
+#        dest:
+
+#    - name: unzip the tomcat on nodes
+#      unzip/shell:
+
+#    - name: copy application war file to tomcat   
+#      shell: 
+
+#    - name: start tomcat binary
+#      shell: /tomcatdir/bin/startup.sh

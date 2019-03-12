@@ -8,6 +8,7 @@
       apt:
         name: openjdk-8-jdk
         state: absent
+        update_cache: yes
       become: yes
       tags: removeJDK8
 
@@ -15,6 +16,7 @@
       apt:
         name: maven
         state: absent
+        update_cache: yes
       become: yes
       tags: removeMvn
  

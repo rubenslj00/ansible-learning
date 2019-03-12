@@ -1,11 +1,32 @@
 ---
-- hosts: node1
+- hosts: all
   gather_facts: no
-  become: yes
-  become_user: root
  
   tasks:
-    - name: Install tree
-      apt: 
-        name: tree
+
+    - name: Installing JDK8
+      apt:
+        name: openjdk-8-jdk
         state: present
+      become: yes
+      tags: installJDK8
+
+    - name: Installing Maven
+      apt:
+        name: maven
+        state: present
+      become: yes
+      tags: installMvn
+ 
+    - name: Checking out code
+      git:
+        repo: https://github.com/veersudhir83/devops-web-maven.git 
+        dest: /home/{{ lookup('env', 'USER') }}/appCode/devops-web-maven/
+        version: master
+      tags: checkout  
+
+    - name: Building code using maven
+      shell: |
+        cd /home/{{ lookup('env', 'USER') }}/appCode/devops-web-maven/
+        mvn clean package > build_log.log
+      tags: buildCode

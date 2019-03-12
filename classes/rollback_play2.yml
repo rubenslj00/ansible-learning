@@ -1,0 +1,25 @@
+---
+- hosts: all
+  gather_facts: no
+ 
+  tasks:
+
+    - name: Removing JDK8
+      apt:
+        name: openjdk-8-jdk
+        state: absent
+      become: yes
+      tags: removeJDK8
+
+    - name: Removing Maven
+      apt:
+        name: maven
+        state: absent
+      become: yes
+      tags: removeMvn
+ 
+    - name: Delete proj directory
+      file:
+        path: /home/{{ lookup('env', 'USER') }}/appCode/
+        state: absent
+      tags: deleteProjDir

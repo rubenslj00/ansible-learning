@@ -1,9 +1,13 @@
 ---
 - hosts: all
-  gather_facts: no
+  gather_facts: yes
  
   tasks:
-
+    - name: Print ansible node uptime
+      debug: 
+        msg: "Node Uptime {{ ansible_uptime_seconds }}"       
+      tags: printUpTime
+ 
     - name: Installing JDK8
       apt:
         name: openjdk-8-jdk

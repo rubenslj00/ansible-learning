@@ -1,0 +1,31 @@
+---
+- hosts: all
+  gather_facts: no
+
+  vars:
+    FILE_PATH: "/home/{{ lookup('env', 'USER') }}/ansible.touch"
+
+  tasks:
+
+    - name: Delete if file exists already
+      file:
+        path: "{{ FILE_PATH }}"
+        state: absent
+      tags: always_execute
+
+    - name: Create Empty file
+      file: 
+        path: "{{ FILE_PATH }}"
+        state: touch
+      tags: always_execute
+
+    - name: Write contents to file
+      shell: "echo 'Writing file contents' > {{ FILE_PATH }}"
+
+    - name: Display file contents
+      shell: cat {{ FILE_PATH|quote }}
+      register: FILE_CONTENTS
+
+    - name: Printing debug info
+      debug:
+        msg: "{{ FILE_CONTENTS.stdout }}"        

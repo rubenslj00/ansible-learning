@@ -1,0 +1,78 @@
+---
+- hosts: all
+  gather_facts: yes
+ 
+  vars:
+    GIT_USER_NAME: "veersudhir83"
+    GIT_REPO_NAME: "fitTracker"
+    TOMCAT_INSTALLATION_BIN_DIR: "/home/{{ ansible_ssh_user }}/tools/apache-tomcat-8.5.38/bin"
+
+  tasks:
+    - name: Print ansible node uptime
+      debug:
+        msg: "Node Uptime {{ ansible_uptime_seconds }}"
+      tags: printUpTime
+
+    - name: Stopping tomcat server
+      shell: |
+        chmod u+x {{ TOMCAT_INSTALLATION_BIN_DIR }}/*.sh
+        nohup {{ TOMCAT_INSTALLATION_BIN_DIR }}/catalina.sh stop 
+      tags: stopTomcat
+
+    - name: Installing JDK8
+      apt:
+        name: openjdk-8-jdk
+        state: present
+      become: yes
+      tags: installJDK8
+
+    - name: Installing Maven
+      apt:
+        name: maven
+        state: present
+      become: yes
+      tags: installMvn
+
+    - name: Installing Unzip
+      apt:
+        name: unzip
+        state: present
+      become: yes
+      tags: installUnzip
+ 
+    - name: Checking out code
+      git:
+        repo: https://github.com/{{ GIT_USER_NAME }}/{{ GIT_REPO_NAME }}.git 
+        dest: /home/{{ ansible_ssh_user }}/appCode/{{ GIT_REPO_NAME }}/
+        version: master
+      tags: checkout  
+
+    - name: Building code using maven
+      shell: |
+        cd /home/{{ lookup('env', 'USER') }}/appCode/{{ GIT_REPO_NAME }}/
+        mvn clean package > build_log.log
+      tags: buildCode
+
+    - name: Copying Tomcat to nodes
+      copy: 
+        src: /home/{{ lookup('env', 'USER') }}/tools/apache-tomcat-8.5.38.zip
+        dest: /home/{{ ansible_ssh_user }}/tools/
+      tags: copyTomcat
+
+    - name: Unzipping the tomcat on nodes
+      unarchive:
+        src: /home/{{ ansible_ssh_user }}/tools/apache-tomcat-8.5.38.zip
+        dest: /home/{{ ansible_ssh_user }}/tools/
+        remote_src: yes
+      tags: unzipTomcat
+
+    - name: Deploying application war file to tomcat   
+      shell: 
+        cp /home/{{ ansible_ssh_user }}/appCode/fitTracker/target/fitTracker-0.0.1-SNAPSHOT.war /home/{{ ansible_ssh_user }}/tools/apache-tomcat-8.5.38/webapps/ 
+      tags: deployWarOnTomcat
+
+    - name: Starting tomcat server
+      shell: |
+        chmod u+x {{ TOMCAT_INSTALLATION_BIN_DIR }}/*.sh
+        nohup {{ TOMCAT_INSTALLATION_BIN_DIR }}/catalina.sh start
+      tags: startTomcat
